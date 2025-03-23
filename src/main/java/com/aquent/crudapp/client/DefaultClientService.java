@@ -38,16 +38,20 @@ public class DefaultClientService implements ClientService {
     public Client readClient(Integer id) {
         return clientDao.readClient(id);
     }
-   /* public List<Person> listPersonsForClient(Integer clientId) {
-    	return clientPersonDao.getPersonsForClient(clientId);
-    }
-*/
     
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
     public void updateClient(Client client, List<Integer> newPersonIds) {
     	clientDao.updateClient(client, newPersonIds);
     }
+    
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
+    public void deleteClient(Integer id) {
+    	clientDao.deleteClient(id);
+    }
+    
     
     @Override
     public List<String> validateClient(Client client) {

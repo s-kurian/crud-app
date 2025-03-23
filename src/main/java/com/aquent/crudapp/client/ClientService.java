@@ -40,6 +40,14 @@ public interface ClientService {
      */
     void updateClient(Client client, List<Integer> newPersonIds);
     
+    
+    /**
+     * Deletes a person record by ID.
+     *
+     * @param id the person ID
+     */
+    void deleteClient(Integer id);
+    
     /**
      * Validates populated client data.
      *

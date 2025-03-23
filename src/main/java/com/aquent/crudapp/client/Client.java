@@ -15,11 +15,11 @@ public class Client {
     private Integer clientId;
 
     @NotNull
-    @Size(min = 1, max = 100, message = "Company name is required with maximum length of 50")
+    @Size(min = 1, max = 100, message = "Client name is required with maximum length of 50")
     private String name;
 
     @NotNull
-    @Size(min = 1, max = 400, message = "Website url is required with maximum length of 400")
+    @Size(min = 1, max = 400, message = "Website URL is required with maximum length of 400")
     private String websiteUrl;
 
     @NotNull

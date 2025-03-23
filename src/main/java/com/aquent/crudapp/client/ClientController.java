@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.aquent.crudapp.person.Person;
@@ -73,7 +74,7 @@ public class ClientController {
      * @return redirect, or edit view with errors
      */
     @PostMapping(value = "edit")
-    public ModelAndView edit(Client client, List<Integer> personIds) {
+    public ModelAndView edit(Client client, @RequestParam(required=false) List<Integer> personIds) {
         List<String> errors = clientService.validateClient(client);
         if (errors.isEmpty()) {
         	clientService.updateClient(client, personIds);
@@ -82,7 +83,37 @@ public class ClientController {
             ModelAndView mav = new ModelAndView("client/edit");
             mav.addObject("client", client);
             mav.addObject("errors", errors);
+            mav.addObject("selectedPersonIds", personIds);
+            mav.addObject("allPersons", personService.listPeople());
             return mav;
         }
+    }
+    
+    /**
+     * Renders the deletion confirmation page.
+     *
+     * @param clientId the ID of the client to be deleted
+     * @return delete view populated from the client record
+     */
+    @GetMapping(value = "delete/{clientId}")
+    public ModelAndView delete(@PathVariable Integer clientId) {
+        ModelAndView mav = new ModelAndView("client/delete");
+        mav.addObject("client", clientService.readClient(clientId));
+        return mav;
+    }
+
+    /**
+     * Handles person deletion or cancellation, redirecting to the listing page in either case.
+     *
+     * @param command the command field from the form
+     * @param clientId the ID of the client to be deleted
+     * @return redirect to the client listing page
+     */
+    @PostMapping(value = "delete")
+    public String delete(@RequestParam String command, @RequestParam Integer clientId) {
+        if (COMMAND_DELETE.equals(command)) {
+        	clientService.deleteClient(clientId);
+        }
+        return "redirect:/client/list";
     }
 }

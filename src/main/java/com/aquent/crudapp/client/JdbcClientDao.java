@@ -29,11 +29,12 @@ public class JdbcClientDao implements ClientDao {
     private static final String SQL_UPDATE_CLIENT = "UPDATE client SET (name, website_url, phone_number, street_address, city, state, zip_code)"
                                                   + " = (:name, :websiteUrl, :phoneNumber, :streetAddress, :city, :state, :zipCode)"
                                                   + " WHERE client_id = :clientId";
+    
     private static final String SQL_CREATE_CLIENT = "INSERT INTO client (name, website_url, phone_number, street_address, city, state, zip_code)"
                                                   + " VALUES (:name, :websiteUrl, :phoneNumber, :streetAddress, :city, :state, :zipCode)";
 
     private static final String SQL_DELETE_CLIENT = "DELETE FROM client WHERE client_id = :clientId";
-    
+     
     private static final String SQL_LIST_CLIENT_PERSON_ASSOCIATIONS = "SELECT p.* FROM person p"
 												+" JOIN client_person cp on p.person_id = cp.person_id"
 												+" WHERE cp.client_id = :clientId"
@@ -43,9 +44,11 @@ public class JdbcClientDao implements ClientDao {
     
     private static final String SQL_CREATE_CLIENT_PERSON_ASSOCIATION = "INSERT INTO client_person (client_id, person_id) "
     																 + "VALUES (:clientId, :personId)";
+    
     private static final String SQL_DELETE_CLIENT_PERSON_ASSOCIATION = "DELETE FROM client_person WHERE client_id = :clientId AND person_id = :personId";
-			 
-
+    
+    private static final String SQL_DELETE_CLIENT_ALL_PERSON_ASSOCIATION = "DELETE FROM client_person WHERE client_id = :clientId";			 
+    
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public JdbcClientDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
@@ -78,39 +81,51 @@ public class JdbcClientDao implements ClientDao {
     	
         namedParameterJdbcTemplate.update(SQL_UPDATE_CLIENT, new BeanPropertySqlParameterSource(client));
         
-        // Fetch current person associations
-        
-        List<Integer> existingAssociatedPersonIds = namedParameterJdbcTemplate.queryForList(SQL_LIST_CLIENT_PERSON_ASSOCIATION_IDS,  Collections.singletonMap("clientId", client.getClientId()), Integer.class);
-
-        // Determine persons to add
-        List<Integer> personsToAdd = newPersonIds.stream()
-                .filter(id -> !existingAssociatedPersonIds.contains(id))
-                .toList();
-
-        // Determine persons to remove
-        List<Integer> personsToRemove = existingAssociatedPersonIds.stream()
-                .filter(id -> !newPersonIds.contains(id))
-                .toList();
-
-        // Insert new persons
-        if (!personsToAdd.isEmpty()) {
-            List<SqlParameterSource> batchInsertParams = personsToAdd.stream()
-                    .map((Integer personId) -> new MapSqlParameterSource()
-                            .addValue("clientId", client.getClientId())
-                            .addValue("personId", personId))
-                    .collect(Collectors.toList());
-            namedParameterJdbcTemplate.batchUpdate(SQL_CREATE_CLIENT_PERSON_ASSOCIATION, batchInsertParams.toArray(new SqlParameterSource[0]));
-        }
-
-        // Remove persons
-        if (!personsToRemove.isEmpty()) {
-            List<SqlParameterSource> batchDeleteParams = personsToRemove.stream()
-                    .map((Integer personId) -> new MapSqlParameterSource()
-                            .addValue("clientId", client.getClientId())
-                            .addValue("personId", personId))
-                    .collect(Collectors.toList());
-            namedParameterJdbcTemplate.batchUpdate(SQL_DELETE_CLIENT_PERSON_ASSOCIATION, batchDeleteParams.toArray(new SqlParameterSource[0]));
-        }
-    	
+        if(newPersonIds != null) {
+	        
+        	// Fetch current person associations for the client
+	        List<Integer> existingAssociatedPersonIds = namedParameterJdbcTemplate.queryForList(SQL_LIST_CLIENT_PERSON_ASSOCIATION_IDS,  Collections.singletonMap("clientId", client.getClientId()), Integer.class);
+	
+	        // Determine person associations to add
+	        List<Integer> personsToAdd = newPersonIds.stream()
+	                .filter(id -> !existingAssociatedPersonIds.contains(id))
+	                .toList();
+	
+	        // Determine person associations to remove
+	        List<Integer> personsToRemove = existingAssociatedPersonIds.stream()
+	                .filter(id -> !newPersonIds.contains(id))
+	                .toList();
+	
+	        // Insert new person associations
+	        if (!personsToAdd.isEmpty()) {
+	            List<SqlParameterSource> batchInsertParams = personsToAdd.stream()
+	                    .map((Integer personId) -> new MapSqlParameterSource()
+	                            .addValue("clientId", client.getClientId())
+	                            .addValue("personId", personId))
+	                    .collect(Collectors.toList());
+	            namedParameterJdbcTemplate.batchUpdate(SQL_CREATE_CLIENT_PERSON_ASSOCIATION, batchInsertParams.toArray(new SqlParameterSource[0]));
+	        }
+	
+	        // Remove unwanted person associations
+	        if (!personsToRemove.isEmpty()) {
+	            List<SqlParameterSource> batchDeleteParams = personsToRemove.stream()
+	                    .map((Integer personId) -> new MapSqlParameterSource()
+	                            .addValue("clientId", client.getClientId())
+	                            .addValue("personId", personId))
+	                    .collect(Collectors.toList());
+	            namedParameterJdbcTemplate.batchUpdate(SQL_DELETE_CLIENT_PERSON_ASSOCIATION, batchDeleteParams.toArray(new SqlParameterSource[0]));
+	        }
+        }  	
     }
+    
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
+    public void deleteClient(Integer clientId) {
+    	Map<String, Integer> paramMap = Collections.singletonMap("clientId", clientId);
+
+        namedParameterJdbcTemplate.update(SQL_DELETE_CLIENT_ALL_PERSON_ASSOCIATION, paramMap);
+        namedParameterJdbcTemplate.update(SQL_DELETE_CLIENT, paramMap);
+    }
+
 }

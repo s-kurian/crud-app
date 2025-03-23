@@ -33,4 +33,10 @@ public interface ClientDao {
      */
     void updateClient(Client client, List<Integer> newPersonIds);
 
+    /**
+     * Deletes a client record by ID.
+     *
+     * @param id the client ID
+     */
+    void deleteClient(Integer id);
 }
