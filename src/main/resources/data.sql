@@ -1,3 +1,30 @@
+
+INSERT INTO client (
+    name,
+    website_url,
+    phone_number,
+    street_address,
+    city,
+    state,
+    zip_code
+) VALUES (
+    'Company1',
+    'www.company1.com',
+    '9999999999',
+    '123 Any St.',
+    'Raleigh',
+    'NC',
+    '25603'
+), (
+    'Company2',
+    'www.company2.com',
+    '9999999999',
+    '564 Any St.',
+    'Raleigh',
+    'NC',
+    '25606'
+);
+
 INSERT INTO person (
     first_name,
     last_name,
@@ -22,4 +49,10 @@ INSERT INTO person (
     'Asheville',
     'NC',
     '28801'
+);
+
+INSERT INTO client_person (
+	client_id,
+	person_id
+	) VALUES (1,1
 );
