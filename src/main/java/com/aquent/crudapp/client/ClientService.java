@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.aquent.crudapp.person.Person;
+
 /**
  * Client operations.
  */
@@ -16,14 +18,6 @@ public interface ClientService {
      * @return list of client records
      */
     List<Client> listClients();
-    
-    /**
-     * Retrieves all of the person records associated with a client.
-     *
-     * @return list of person records
-     */
-    //List<Person> listPersonsForClient(Integer clientId);
-    
 
     /**
      * Retrieves a client record by ID.
@@ -34,13 +28,19 @@ public interface ClientService {
     Client readClient(Integer id);
     
     /**
+     * Creates a new client record.
+     *
+     * @param person the values to save
+     * @return the new client ID
+     */
+    Integer createClient(Client client, List<Integer> personIds);
+    /**
      * Updates an existing client record.
      *
      * @param client the new values to save
      */
     void updateClient(Client client, List<Integer> newPersonIds);
-    
-    
+      
     /**
      * Deletes a person record by ID.
      *

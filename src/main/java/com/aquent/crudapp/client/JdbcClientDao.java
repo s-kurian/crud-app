@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +75,24 @@ public class JdbcClientDao implements ClientDao {
         	client.setPersons(persons);
     	}
     	return client;
+    }
+    
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
+    public Integer createClient(Client client, List<Integer> personIds){
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        namedParameterJdbcTemplate.update(SQL_CREATE_CLIENT, new BeanPropertySqlParameterSource(client), keyHolder);
+        Integer clientId = keyHolder.getKey().intValue();
+     
+        if (!personIds.isEmpty()) {
+            List<SqlParameterSource> batchInsertParams = personIds.stream()
+                    .map((Integer personId) -> new MapSqlParameterSource()
+                            .addValue("clientId", clientId)
+                            .addValue("personId", personId))
+                    .collect(Collectors.toList());
+            namedParameterJdbcTemplate.batchUpdate(SQL_CREATE_CLIENT_PERSON_ASSOCIATION, batchInsertParams.toArray(new SqlParameterSource[0]));
+        }
+        return clientId;
     }
     
     @Override

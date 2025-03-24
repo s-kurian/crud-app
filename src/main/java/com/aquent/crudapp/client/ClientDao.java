@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import com.aquent.crudapp.person.Person;
+
 
 /**
  * Operations on the "client" table.
@@ -27,11 +29,20 @@ public interface ClientDao {
     Client readClient(Integer id);
     
     /**
+     * Creates a new client record.
+     *
+     * @param client the values to save
+     * @return the new client ID
+     */
+    Integer createClient(Client client, List<Integer> personIds);
+
+    
+    /**
      * Updates an existing client record.
      *
      * @param client the new values to save
      */
-    void updateClient(Client client, List<Integer> newPersonIds);
+    void updateClient(Client client, List<Integer> personIds);
 
     /**
      * Deletes a client record by ID.

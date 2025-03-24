@@ -44,7 +44,43 @@ public class ClientController {
         mav.addObject("clients", clientService.listClients());
         return mav;
     }
-    
+    /**
+     * Renders an empty form used to create a new person record.
+     *
+     * @return create view populated with an empty client
+     */
+    @GetMapping(value = "create")
+    public ModelAndView create() {
+        ModelAndView mav = new ModelAndView("client/create");
+        mav.addObject("client", new Client());
+        mav.addObject("allPersons", personService.listPeople());
+        mav.addObject("errors", new ArrayList<String>());
+        return mav;
+    }
+
+    /**
+     * Validates and saves a new client.
+     * On success, the user is redirected to the listing page.
+     * On failure, the form is redisplayed with the validation errors.
+     *
+     * @param client populated form bean for the client
+     * @return redirect, or create view with errors
+     */
+    @PostMapping(value = "create")
+    public ModelAndView create(Client client, @RequestParam(required=false) List<Integer> personIds) {
+        List<String> errors = clientService.validateClient(client);
+        if (errors.isEmpty()) {
+        	clientService.createClient(client, personIds);
+            return new ModelAndView("redirect:/client/list");
+        } else {
+            ModelAndView mav = new ModelAndView("client/create");
+            mav.addObject("client", client);
+            mav.addObject("allPersons", personService.listPeople());
+            mav.addObject("errors", errors);
+            return mav;
+        }
+    }
+
     /**
      * Renders an edit form for an existing client record.
      *

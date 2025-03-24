@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aquent.crudapp.person.Person;
+
 
 /**
  * Default implementation of {@link ClientService}.
@@ -37,6 +39,12 @@ public class DefaultClientService implements ClientService {
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public Client readClient(Integer id) {
         return clientDao.readClient(id);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
+    public Integer createClient(Client client, List<Integer> personIds) {
+        return clientDao.createClient(client, personIds);
     }
     
     @Override
