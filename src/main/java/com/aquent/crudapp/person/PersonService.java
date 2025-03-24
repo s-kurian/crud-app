@@ -23,7 +23,7 @@ public interface PersonService {
      * @param person the values to save
      * @return the new person ID
      */
-    Integer createPerson(Person person);
+    Integer createPerson(Person person, Integer clientId);
 
     /**
      * Retrieves a person record by ID.
@@ -38,7 +38,7 @@ public interface PersonService {
      *
      * @param person the new values to save
      */
-    void updatePerson(Person person);
+    void updatePerson(Person person, Integer clientId);
 
     /**
      * Deletes a person record by ID.

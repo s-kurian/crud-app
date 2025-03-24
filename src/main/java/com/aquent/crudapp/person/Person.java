@@ -1,7 +1,12 @@
 package com.aquent.crudapp.person;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.aquent.crudapp.client.Client;
 
 /**
  * The person entity corresponding to the "person" table in the database.
@@ -37,6 +42,8 @@ public class Person {
     @NotNull
     @Size(min = 5, max = 5, message = "Zip code is required with length 5")
     private String zipCode;
+    
+    private List<Client> clients = new ArrayList<Client>();
 
     public Integer getPersonId() {
         return personId;
@@ -101,4 +108,20 @@ public class Person {
     public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
     }
+
+	public List<Client> getClients() {
+		return clients;
+	}
+
+	public void setClients(List<Client> clients) {
+		this.clients = clients;
+	}
+
+	@Override
+	public String toString() {
+		return "Person [personId=" + personId + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", emailAddress=" + emailAddress + ", streetAddress=" + streetAddress + ", city=" + city + ", state="
+				+ state + ", zipCode=" + zipCode + ", client=" + clients + "]";
+	}
+	
 }

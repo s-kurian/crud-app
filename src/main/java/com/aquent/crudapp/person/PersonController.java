@@ -2,6 +2,8 @@ package com.aquent.crudapp.person;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.aquent.crudapp.client.Client;
+import com.aquent.crudapp.client.ClientService;
+
 /**
  * Controller for handling basic person management operations.
  */
@@ -19,11 +24,13 @@ import org.springframework.web.servlet.ModelAndView;
 public class PersonController {
 
     public static final String COMMAND_DELETE = "Delete";
-
+    
     private final PersonService personService;
+    private final ClientService clientService;
 
-    public PersonController(PersonService personService) {
+    public PersonController(PersonService personService, ClientService clientService) {
         this.personService = personService;
+        this.clientService = clientService;
     }
 
     /**
@@ -47,6 +54,7 @@ public class PersonController {
     public ModelAndView create() {
         ModelAndView mav = new ModelAndView("person/create");
         mav.addObject("person", new Person());
+        mav.addObject("allClients", clientService.listClients());
         mav.addObject("errors", new ArrayList<String>());
         return mav;
     }
@@ -60,14 +68,15 @@ public class PersonController {
      * @return redirect, or create view with errors
      */
     @PostMapping(value = "create")
-    public ModelAndView create(Person person) {
+    public ModelAndView create(Person person, @RequestParam(required=false) Integer clientId) {
         List<String> errors = personService.validatePerson(person);
         if (errors.isEmpty()) {
-            personService.createPerson(person);
+            personService.createPerson(person, clientId);
             return new ModelAndView("redirect:/person/list");
         } else {
             ModelAndView mav = new ModelAndView("person/create");
             mav.addObject("person", person);
+            mav.addObject("allClients", clientService.listClients());
             mav.addObject("errors", errors);
             return mav;
         }
@@ -82,7 +91,17 @@ public class PersonController {
     @GetMapping(value = "edit/{personId}")
     public ModelAndView edit(@PathVariable Integer personId) {
         ModelAndView mav = new ModelAndView("person/edit");
-        mav.addObject("person", personService.readPerson(personId));
+        
+        Person person = personService.readPerson(personId);
+        
+        List<Client> clients = person.getClients();
+        
+        if( clients!= null && !clients.isEmpty()) {
+        	// UI supports a single associated client for a person. So, we just get the first here.
+            mav.addObject("selectedClientId", clients.getFirst().getClientId());   	
+        }
+        mav.addObject("person", person);
+        mav.addObject("allClients", clientService.listClients());
         mav.addObject("errors", new ArrayList<String>());
         return mav;
     }
@@ -96,10 +115,10 @@ public class PersonController {
      * @return redirect, or edit view with errors
      */
     @PostMapping(value = "edit")
-    public ModelAndView edit(Person person) {
+    public ModelAndView edit(Person person, @RequestParam(required=false) Integer clientId) {
         List<String> errors = personService.validatePerson(person);
         if (errors.isEmpty()) {
-            personService.updatePerson(person);
+            personService.updatePerson(person, clientId);
             return new ModelAndView("redirect:/person/list");
         } else {
             ModelAndView mav = new ModelAndView("person/edit");

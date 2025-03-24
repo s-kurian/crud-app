@@ -17,6 +17,7 @@
             <th>Website</th>
             <th>Phone</th>
             <th>Address</th>
+            <th>Contacts</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -27,6 +28,12 @@
               <td th:text="${client.websiteUrl}">Website</td>
               <td th:text="${client.phoneNumber}">PhoneNumber</td>
               <td th:text="${client.streetAddress +' ' + client.city +' ' + client.state + ' - ' + client.zipCode}">Address</td>
+              <td>
+				    <span th:each="contact, iterStat : ${client.contacts}">
+				        <span th:text="${contact.firstName + ' ' + contact.lastName}"></span>
+				        <span th:if="${!iterStat.last}">, </span> 
+				    </span>
+              </td>
               <td>
                 <a th:href="'/client/edit/' + ${client.clientId}">Edit Client</a>
                 <a th:href="'/client/delete/' + ${client.clientId}">Delete Client</a>

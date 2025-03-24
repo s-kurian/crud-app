@@ -23,6 +23,14 @@ INSERT INTO client (
     'Raleigh',
     'NC',
     '25606'
+), (
+    'Company3',
+    'www.company3.com',
+    '9999999999',
+    '345 Any St.',
+    'Raleigh',
+    'NC',
+    '25606'
 );
 
 INSERT INTO person (
@@ -49,10 +57,19 @@ INSERT INTO person (
     'Asheville',
     'NC',
     '28801'
+), (
+    'ddfd',
+    'Smitdfdsh',
+    'fake2@aquent.com',
+    '123 Any St.',
+    'Asheville',
+    'NC',
+    '28801'
 );
 
 INSERT INTO client_person (
 	client_id,
 	person_id
 	) VALUES (1,1
-);
+), (1,2
+) , (3,1);

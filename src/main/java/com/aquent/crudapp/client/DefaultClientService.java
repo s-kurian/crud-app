@@ -60,6 +60,12 @@ public class DefaultClientService implements ClientService {
     	clientDao.deleteClient(id);
     }
     
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public Set<Integer> listAssociatedPersonIds(Integer id)
+    {
+    	return clientDao.listAssociatedPersonIds(id);
+    }
     
     @Override
     public List<String> validateClient(Client client) {

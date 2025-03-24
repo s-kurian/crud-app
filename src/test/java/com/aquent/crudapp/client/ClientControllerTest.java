@@ -48,7 +48,7 @@ public class ClientControllerTest {
         person1.setFirstName("John");
         person1.setLastName("Smith");
 
-        client.setPersons(Arrays.asList(person1));
+        client.setContacts(Arrays.asList(person1));
 
 
         when(clientService.readClient(1)).thenReturn(client);
@@ -103,7 +103,7 @@ public class ClientControllerTest {
         person2.setFirstName("Jane");
         person2.setLastName("Smith");
 
-        client.setPersons(Arrays.asList(person1, person2));
+        client.setContacts(Arrays.asList(person1, person2));
 
         List<Integer> personIds = Arrays.asList(101, 102);
         

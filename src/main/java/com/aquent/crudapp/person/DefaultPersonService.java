@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+
 /**
  * Default implementation of {@link PersonService}.
  */
@@ -30,7 +31,7 @@ public class DefaultPersonService implements PersonService {
     public List<Person> listPeople() {
         return personDao.listPeople();
     }
-
+    
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public Person readPerson(Integer id) {
@@ -39,14 +40,22 @@ public class DefaultPersonService implements PersonService {
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
-    public Integer createPerson(Person person) {
-        return personDao.createPerson(person);
+    public Integer createPerson(Person person, Integer clientId) {  	
+    	List<Integer> clientIds =  new ArrayList<Integer>();
+    	if(clientId != null) {
+    		clientIds.add(clientId);
+    	} 
+        return personDao.createPerson(person, clientIds);
     }
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
-    public void updatePerson(Person person) {
-        personDao.updatePerson(person);
+    public void updatePerson(Person person, Integer clientId) {
+    	List<Integer> clientIds =  new ArrayList<Integer>();
+		if(clientId != null) {
+			clientIds.add(clientId);
+		} 
+        personDao.updatePerson(person, clientIds);
     }
 
     @Override

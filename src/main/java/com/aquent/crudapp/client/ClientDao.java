@@ -1,6 +1,7 @@
 package com.aquent.crudapp.client;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Repository;
 
@@ -27,6 +28,14 @@ public interface ClientDao {
      * @return the client record
      */
     Client readClient(Integer id);
+    
+    /**
+     * Retrieves all associated personIDs by ID.
+     *
+     * @param id the client ID
+     * @return list of IDs of all persons associated with client.
+     */
+    Set<Integer> listAssociatedPersonIds(Integer id);
     
     /**
      * Creates a new client record.

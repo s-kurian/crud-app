@@ -8,7 +8,7 @@
   </head>
   <body>
     <h1>Edit Client</h1>
-    <th:block th:unless="${#lists.isEmpty(errors)}">
+	<th:block th:unless="${#lists.isEmpty(errors)}">
       <p>Please correct the following errors in your submission:</p>
       <ul>
         <th:block th:each="error : ${errors}">

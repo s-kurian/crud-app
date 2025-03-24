@@ -1,11 +1,17 @@
 package com.aquent.crudapp.client;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -24,7 +30,9 @@ import com.aquent.crudapp.person.Person;
 @Component
 public class JdbcClientDao implements ClientDao {
 
-    private static final String SQL_LIST_CLIENTS = "SELECT * FROM client ORDER BY name, client_id";
+    private static final String SQL_LIST_CLIENTS = "select c.client_id, c.name, c.website_url, c.phone_number, c.street_address, c.city, c.state, c.zip_code , p.first_name, p.last_name from client c "
+									    		+ "left join client_person cp on cp.client_id=c.client_id "
+									    		+ "left join person p on p.person_id=cp.person_id";
     
     private static final String SQL_READ_CLIENT = "SELECT * FROM client WHERE client_id = :clientId";
     
@@ -60,7 +68,9 @@ public class JdbcClientDao implements ClientDao {
     @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Client> listClients() {
-        return namedParameterJdbcTemplate.getJdbcOperations().query(SQL_LIST_CLIENTS, new BeanPropertyRowMapper<>(Client.class));
+    	ClientRowMapper clientRowMapper = new ClientRowMapper();
+        namedParameterJdbcTemplate.getJdbcOperations().query(SQL_LIST_CLIENTS, clientRowMapper);
+        return clientRowMapper.getClients();
     }
 
     @Override
@@ -72,14 +82,25 @@ public class JdbcClientDao implements ClientDao {
     	
     	if(client != null) {
     		List<Person> persons =  namedParameterJdbcTemplate.query(SQL_LIST_CLIENT_PERSON_ASSOCIATIONS, paramMap, new BeanPropertyRowMapper<>(Person.class));
-        	client.setPersons(persons);
+        	client.setContacts(persons);
     	}
     	return client;
     }
     
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public Set<Integer> listAssociatedPersonIds(Integer id)
+    {
+    	Client client = readClient(id);
+    	Set<Integer> selectedPersonIds = client.getContacts().stream()
+    			.map(Person::getPersonId)
+    			.collect(Collectors.toSet());
+    	return selectedPersonIds;
+    }
+    
+    @Override
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
-    public Integer createClient(Client client, List<Integer> personIds){
+    public Integer createClient(Client client, List<Integer> personIds) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(SQL_CREATE_CLIENT, new BeanPropertySqlParameterSource(client), keyHolder);
         Integer clientId = keyHolder.getKey().intValue();
@@ -148,4 +169,47 @@ public class JdbcClientDao implements ClientDao {
         namedParameterJdbcTemplate.update(SQL_DELETE_CLIENT, paramMap);
     }
 
+    /**
+     * Row mapper for client records.
+     */
+    private static final class ClientRowMapper implements RowMapper<Client> {
+
+    	private final Map<Integer, Client> clientMap = new HashMap<>(); 
+    	
+        @Override
+        public Client mapRow(ResultSet rs, int rowNum) throws SQLException {
+        	
+        	
+        	Integer  clientId = rs.getInt("client_id");
+
+            Client client = clientMap.get(clientId);
+            if (client == null) {
+            	client = new Client();
+                client.setClientId(clientId);
+                client.setName(rs.getString("name"));
+                client.setWebsiteUrl(rs.getString("website_url"));
+                client.setPhoneNumber(rs.getString("phone_number"));
+                client.setStreetAddress(rs.getString("street_address"));
+                client.setCity(rs.getString("city"));
+                client.setState(rs.getString("state"));
+                client.setZipCode(rs.getString("zip_code"));
+                
+                clientMap.put(clientId, client); 
+            }
+
+            
+            String contactFirstName = rs.getString("first_name");
+            if (contactFirstName != null && !contactFirstName.isEmpty()) {  
+                Person contact = new Person();
+                contact.setFirstName(contactFirstName);
+                contact.setLastName(rs.getString("last_name"));
+                client.getContacts().add(contact);
+            }
+            return client;
+        }
+        
+        public List<Client> getClients() {
+        	return new ArrayList<>(clientMap.values());
+        }
+    }
 }

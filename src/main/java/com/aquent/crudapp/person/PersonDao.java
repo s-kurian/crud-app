@@ -16,14 +16,15 @@ public interface PersonDao {
      * @return list of person records
      */
     List<Person> listPeople();
-
+    
     /**
      * Creates a new person record.
      *
      * @param person the values to save
+     * @param clientIds the client associations to save
      * @return the new person ID
      */
-    Integer createPerson(Person person);
+    Integer createPerson(Person person, List<Integer> clientIds);
 
     /**
      * Retrieves a person record by ID.
@@ -36,9 +37,10 @@ public interface PersonDao {
     /**
      * Updates an existing person record.
      *
-     * @param person the new values to save
+     * @param person the new person values to save
+     * @param clientIds the client associations to save
      */
-    void updatePerson(Person person);
+    void updatePerson(Person person,List<Integer> clientIds);
 
     /**
      * Deletes a person record by ID.
