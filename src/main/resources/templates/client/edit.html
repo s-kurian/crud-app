@@ -1,0 +1,55 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Edit Client</title>
+  </head>
+  <body>
+    <h1>Edit Client</h1>
+    <th:block th:unless="${#lists.isEmpty(errors)}">
+      <p>Please correct the following errors in your submission:</p>
+      <ul>
+        <th:block th:each="error : ${errors}">
+           <li th:text="${error}"></li>
+        </th:block>
+      </ul>
+    </th:block>
+    <form action="/client/edit" method="POST">
+      <input type="hidden" name="clientId" th:value="${client.clientId}"/>
+      <br/>
+      <label for="name">Name:</label>
+      <input type="text" name="name" th:value="${client.name}"/>
+      <br/>
+      <label for="websiteUrl">Website:</label>
+      <input type="text" name="websiteUrl" th:value="${client.websiteUrl}"/>
+      <br/>
+      <label for="phoneNumber">Phone:</label>
+      <input type="text" name="phoneNumber" th:value="${client.phoneNumber}"/>
+      <br/>
+      <label for="streetAddress">Street Address:</label>
+      <input type="text" name="streetAddress" th:value="${client.streetAddress}"/>
+      <br/>
+      <label for="city">City:</label>
+      <input type="text" name="city" th:value="${client.city}"/>
+      <br/>
+      <label for="state">State:</label>
+      <input type="text" name="state" th:value="${client.state}"/>
+      <br/>
+      <label for="zipCode">Zip Code:</label>
+      <input type="text" name="zipCode" th:value="${client.zipCode}"/>
+      <br/>
+      <label for="personIds">Available Contacts:</label>
+      <select id="personIds" name="personIds" multiple="multiple">
+            <option th:each="person : ${allPersons}"                                        
+                    th:value="${person.personId}"
+                    th:text="${person.firstName +' '+ person.lastName}"
+                    th:selected="${selectedPersonIds.contains(person.personId)}">
+            </option>
+        </select>  
+        <br/> 
+      <input type="submit" name="Submit" value="Submit"/>
+    </form>
+  </body>
+</html>
