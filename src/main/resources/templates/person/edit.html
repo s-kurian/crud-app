@@ -5,6 +5,12 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Edit Person</title>
+     <style>
+      .error-message {
+	      color: red;
+	      font-size: 12px;
+	    }
+    </style>
   </head>
   <body>
     <h1>Edit Person</h1>
@@ -16,40 +22,56 @@
         </th:block>
       </ul>
     </th:block>
-    <form action="/person/edit" method="POST">
+    <form action="/person/edit" method="POST" id="clientForm">
       <input type="hidden" name="personId" th:value="${person.personId}"/>
       <br/>
       <label for="firstName">First Name:</label>
-      <input type="text" name="firstName" th:value="${person.firstName}"/>
+      <input type="text" name="firstName" id="firstName" th:value="${person.firstName}"/>
+      <div class="error-message" id="firstName-error"></div>
       <br/>
+
       <label for="lastName">Last Name:</label>
-      <input type="text" name="lastName" th:value="${person.lastName}"/>
+      <input type="text" name="lastName" id="lastName" th:value="${person.lastName}"/>
+      <div class="error-message" id="lastName-error"></div>
       <br/>
+
       <label for="emailAddress">Email Address:</label>
-      <input type="text" name="emailAddress" th:value="${person.emailAddress}"/>
+      <input type="text" name="emailAddress" id="emailAddress" th:value="${person.emailAddress}"/>
+      <div class="error-message" id="emailAddress-error"></div>
       <br/>
+
       <label for="streetAddress">Street Address:</label>
-      <input type="text" name="streetAddress" th:value="${person.streetAddress}"/>
+      <input type="text" name="streetAddress" id="streetAddress" th:value="${person.streetAddress}"/>
+      <div class="error-message" id="streetAddress-error"></div>
       <br/>
+
       <label for="city">City:</label>
-      <input type="text" name="city" th:value="${person.city}"/>
+      <input type="text" name="city" id="city" th:value="${person.city}"/>
+      <div class="error-message" id="city-error"></div>
       <br/>
+
       <label for="state">State:</label>
-      <input type="text" name="state" th:value="${person.state}"/>
+      <input type="text" name="state" id="state" th:value="${person.state}"/>
+      <div class="error-message" id="state-error"></div>
       <br/>
+
       <label for="zipCode">Zip Code:</label>
-      <input type="text" name="zipCode" th:value="${person.zipCode}"/>
+      <input type="text" name="zipCode" id="zipCode" th:value="${person.zipCode}"/>
+      <div class="error-message" id="zipCode-error"></div>
       <br/>
+
       <select id="clientId" name="clientId">
-      		<option value="">-- Select a Client --</option>
-            <option th:each="client : ${allClients}"                                        
-                    th:value="${client.clientId}"
-                    th:text="${client.name}"
-                    th:selected="${selectedClientId == client.clientId}">
-            </option>
-        </select> 
-        <br/> 
+        <option value="">-- Select a Client --</option>
+        <option th:each="client : ${allClients}" 
+                th:value="${client.clientId}" 
+                th:text="${client.name}"
+                th:selected="${selectedClientId == client.clientId}">
+        </option>
+      </select>
+      <br/>
       <input type="submit" name="Submit" value="Submit"/>
     </form>
+
+    <script th:src="@{/js/person_form_validation.js}"></script>
   </body>
 </html>
