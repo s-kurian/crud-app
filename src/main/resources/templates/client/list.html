@@ -1,50 +1,54 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Clients Listing</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   </head>
   <body>
-    <h1>Clients Listing</h1>
-    <p><a href="/client/create">Create New Client</a></p>
-    <th:block th:unless="${#lists.isEmpty(clients)}">
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Website</th>
-            <th>Phone</th>
-            <th>Address</th>
-            <th>Contacts</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-         <th:block th:each="client : ${clients}">
+    <div class="container mt-4">
+      <h1>Clients Listing</h1>
+      <p><a href="/client/create" class="btn btn-success">Create New Client</a></p>
+      
+      <th:block th:unless="${#lists.isEmpty(clients)}">
+        <table class="table table-striped">
+          <thead>
             <tr>
-              <td th:text="${client.name}">Client Name</td>
-              <td th:text="${client.websiteUrl}">Website</td>
-              <td th:text="${client.phoneNumber}">PhoneNumber</td>
-              <td th:text="${client.streetAddress +' ' + client.city +' ' + client.state + ' - ' + client.zipCode}">Address</td>
-              <td>
-				    <span th:each="contact, iterStat : ${client.contacts}">
-				        <span th:text="${contact.firstName + ' ' + contact.lastName}"></span>
-				        <span th:if="${!iterStat.last}">, </span> 
-				    </span>
-              </td>
-              <td>
-                <a th:href="'/client/edit/' + ${client.clientId}">Edit Client</a>
-                <a th:href="'/client/delete/' + ${client.clientId}">Delete Client</a>
-              </td>
+              <th>Name</th>
+              <th>Website</th>
+              <th>Phone</th>
+              <th>Address</th>
+              <th>Contacts</th>
+              <th>Actions</th>
             </tr>
-          </th:block>
-        </tbody>
-      </table>
-     </th:block>
-       <th:block th:if="${#lists.isEmpty(clients)}">
-      <p>No results found.</p>
-    </th:block>
+          </thead>
+          <tbody>
+            <th:block th:each="client : ${clients}">
+              <tr>
+                <td th:text="${client.name}">Client Name</td>
+                <td th:text="${client.websiteUrl}">Website</td>
+                <td th:text="${client.phoneNumber}">Phone</td>
+                <td th:text="${client.streetAddress + ' ' + client.city + ' ' + client.state + ' - ' + client.zipCode}">Address</td>
+                <td>
+                  <span th:each="contact, iterStat : ${client.contacts}">
+                    <span th:text="${contact.firstName + ' ' + contact.lastName}"></span>
+                    <span th:if="${!iterStat.last}">, </span>
+                  </span>
+                </td>
+                <td>
+                  <a th:href="'/client/edit/' + ${client.clientId}" class="btn btn-warning btn-sm">Edit</a>
+                  <a th:href="'/client/delete/' + ${client.clientId}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+              </tr>
+            </th:block>
+          </tbody>
+        </table>
+      </th:block>
+
+      <th:block th:if="${#lists.isEmpty(clients)}">
+        <div class="alert alert-info">No results found.</div>
+      </th:block>
+	  <a href="/" class="btn btn-secondary">Home</a>
+    </div>
   </body>
 </html>

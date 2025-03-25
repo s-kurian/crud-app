@@ -65,7 +65,7 @@ function validateForm() {
   return isValid;
 }
 
-document.getElementById('clientForm').addEventListener('submit', function(event) {
+document.getElementById('personForm').addEventListener('submit', function(event) {
   event.preventDefault();
   if (validateForm()) {
     this.submit(); 
