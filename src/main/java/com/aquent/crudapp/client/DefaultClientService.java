@@ -11,9 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aquent.crudapp.person.Person;
-
-
 /**
  * Default implementation of {@link ClientService}.
  */

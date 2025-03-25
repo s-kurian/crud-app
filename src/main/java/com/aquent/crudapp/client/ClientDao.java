@@ -5,9 +5,6 @@ import java.util.Set;
 
 import org.springframework.stereotype.Repository;
 
-import com.aquent.crudapp.person.Person;
-
-
 /**
  * Operations on the "client" table.
  */

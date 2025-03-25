@@ -179,5 +179,21 @@ public class ClientControllerTest {
 
         verify(clientService, times(0)).deleteClient(clientId);
     }
+    
+    @Test
+    public void list_GET_ShouldReturnModelAndView() {
+    	
+        List<Client> clients = new ArrayList<Client>();
+        clients.add(new Client());
+
+        when(clientService.listClients()).thenReturn(clients);
+
+        ModelAndView result = clientController.list();
+        
+        assertEquals("client/list", result.getViewName());
+        assertEquals(clients, result.getModel().get("clients"));       
+
+        verify(clientService, times(1)).listClients();
+    }
 
 }

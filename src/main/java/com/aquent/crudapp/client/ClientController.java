@@ -90,7 +90,6 @@ public class ClientController {
     @GetMapping(value = "edit/{clientId}")
     public ModelAndView edit(@PathVariable Integer clientId) {
     	Client client = clientService.readClient(clientId);
-    	System.out.println(client);
     	Set<Integer> selectedPersonIds = client.getContacts().stream()
     			.map(Person::getPersonId)
     			.collect(Collectors.toSet());

@@ -70,6 +70,10 @@ INSERT INTO person (
 INSERT INTO client_person (
 	client_id,
 	person_id
-	) VALUES (1,1
-), (1,2
-) , (3,1);
+	) VALUES (
+	1,
+	1
+), (
+	1,
+	2
+);
